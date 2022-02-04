@@ -76,6 +76,87 @@
 ## 10.打包
     1. npm run build
     2. 部署到服务器上：
-       npm i server -g
-    3. 将现目录的build文件夹作为根目录，启动服务器：
-       npx serve build
+       1）node.js,java搭建服务器
+       2）利用serve，全局利用
+          npm i server -g
+          将现目录的build文件夹作为根目录，启动服务器：
+          npx serve build
+
+## 11. setState两种写法
+1.对象式的setState
+  setState(stateChange,[callBack])
+  setState是异步更新状态，在callBack方法里面可以拿到更新完的结果。
+  callback是可选回调函数，在状态更新后，render调用完才被调用
+  this.setState({count:count + 1}, () => {
+    consoe.log("这里可以拿到更新后的值",thhis.state.count)
+  })
+2.函数式的setState
+  setState(updater,[callBack])
+  updater为返回stateChange对象的函数，可以接受state和props作为参数
+  callback是可选回调函数，在状态更新后，render调用完才被调用
+  this.setState((state,props)=>{
+    return {count:state.count + 1}
+  })
+  this.setState(state => ({count:state.count + 1}))
+
+  ## 12. 懒加载
+  用的时候才加载。用于大项目。用最多的是路由组件的加载
+  
+  import {lazy, Suspense} from 'react'
+  // 懒加载的引用方式
+  const HOME = lacy(()=> import('./Home') )
+  const About = lacy(()=> import('./About'))
+
+  export default class Demo extends Component {
+    render() {
+      return (
+        <>
+          {/*网速慢的时候显示fallback的组件*/}
+          <Suspense fallback={<h1>Loading</h1>}>
+           {/*注册路由*/}
+            <Route path="/home" component={Home} />
+            <Route path="/about" component={About} />
+          </Suspense>
+        </>
+      )
+    }
+  }
+
+## 13. Hooks
+React 16.8版本新加的
+1. useState （类组件：state + setState）
+结构赋值：数据和对象都可以
+const [count,setCount] = React.useState(0) // react 的底层处理：再执行是不会覆盖被更新的count的值
+
+function add(){
+  setCount(count + 1) //第一种写法
+  setCount(count => count + 1) //第二种写法
+}
+
+return（
+  <div>
+  {count}
+  <button onClick={add}>点我加一</button>
+  </div>
+）
+2. useEffect (类组件：3个生命周期)
+React.useEffect(()=>{
+  // 写带有副作用的操作
+
+  return ()=>{
+    // 相当于componentWillUnmount
+  }
+},[]) //为空相当于componentDidMount,有依赖相当于componentDidUpdate
+
+3.useRef (类组件：React.createRef)
+const myRef = React.useRef()
+function show() {
+  alert(myRef.current.value)
+}
+
+return (
+  <>
+    <input type="text" ref={myRef}>
+    <button onClick={show}></button>
+  </>
+)
